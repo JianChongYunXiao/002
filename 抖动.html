@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>抖动</title>
+    <style>
+        #div{
+            width: 200px;
+            height: 200px;
+            background:burlywood;
+            position:absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="div"></div>
+    <script>
+
+        //  抖动
+
+        // let div = document.getElementById('div')         //  获取html中的div元素
+        // let cishu = [50, -50, 30, -30, 20, -20, 10, -10, 0]  // 创建一个变量，里面的值依次为要变换的动作的值（不带单位）
+        // let i = 0;                                       // 创建一个全局变量 i = 0  因为 需要用到能改变的全局变量。
+        // let timer = null                                 // 设置一个全局变量timer  是为了给定时器1  占位
+
+        // div.onclick = () => {                            // 设置点击事件
+        //     timer = setInterval(() =>{                   // 给变量timer赋值为连续定时器1的编号  同时设置定时器
+        //         div.style.left = cishu[i] + 'px';    // div的行内属性left 等于数组的某一项。 记得本身这个值是没有单位的，要加单位
+        //         i++                        // 自增，每次运行后全局变量 i 都会加一   当定时器再次运行时，上一行代码就会改变数值。
+        //         if (i >= cishu.length) {             // 判断语句：当 i 大于等于数字的长度时  抖动已经做完了。
+        //             clearTimeout(timer);             // 关闭定时器，
+        //             i = 0;                           // i 重新设为0 ，是为了能多次使用，为下次抖动做准备。
+        //         }
+        //     }, 16.7)                                  // 每过16.7毫秒以后运行一次定时器。
+        // }
+
+
+        // 略微升级点
+        let box = document.getElementById('div')
+        box.style.left = '200px'
+         
+        function dou(ele, attrs, n, callback){   // 创建一个函数形参分别为（操作对象、行内属性、变换数值、回调函数）
+            let arr = [];       
+            let num = 0;
+            let timer = null;
+            for (var i = n; i > 0; i-=2) {       // for循环，
+                arr.push(-i, i)                  // 将想要变换的数值以每次减2的频率,将数值的正负数放进arr的数组中
+            }
+            arr.push(0)                          // 最后在数组的尾部放进一个 0  
+
+            let begin = parseFloat(getComputedStyle(ele)[attrs]); // 获取操作对象的css中我们想要操作的属性的数值。
+            timer = setInterval(function(){       // 设置一个连续性的定时器。
+                ele.style[attrs] = begin + arr[num] + 'px';  // 设置想要操作的属性的数值 记得加单位，attrs为变量不能用点，要用[]
+                num++;                            // 每次自增
+                if (num > arr.length) {           // 判断语句，当num大于数组的长度时。 判断语句一定要放在定时器里面进行判断
+                    clearInterval(timer);         // 关闭定时器。
+                    num = 0                       // num = 0 方便下次用
+                    callback && callback()        //  逻辑与 思维，当左边有或者为真时，运算右边的函数或者得到右边的值；
+                }
+            }, 16.7)                              // 每隔16.7毫秒运行一次
+            
+        }
+    
+        box.onclick = function (){                // 设置点击事件，当点击这个box元素时，
+            dou(box, 'left', 80, function(){      // 运行 dou 这个函数 分别传入实参 box,'left',想要变换的数值，回调函数
+                box.style.background = 'skyblue'; // 设置对象的行内元素：背景 为'skyblue'
+                setTimeout(()=>{                  // 设置一次性定时器
+                    box.style.top = '100px';      // 设置操作对象的行内元素 上面。
+                    box.style.transition = '1s';  // 设置操作对象的行内元素的动画事件（运动的时间）
+                }, 50)  
+            })
+        }
+
+
+    </script>
+</body>
+</html>
